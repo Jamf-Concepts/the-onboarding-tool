@@ -74,9 +74,9 @@ Screenshots live in `Screenshots/`. The full set, with captions, is on the [wiki
 
 ![The Onboarding Tool home screen, with a card for Setup Manager and a card for Setup Checklist.](Screenshots/home-screen.png)
 
-**See what the user will see, before you deploy**
+**See close to what the user will see, before you deploy**
 
-The Workflow Preview renders your configuration as the end user will experience it. Every element traces back to a field in the editor.
+The Workflow Preview renders your configuration close to how the end user will experience it. Every element traces back to a field in the editor. Ideal for confirming branding, Icons, input fields and more before deploying out for further debugging. 
 
 ![The Setup Manager editor beside the Workflow Preview, showing the same title, message, and three actions in both windows.](Screenshots/workflow-preview-side-by-side.png)
 
