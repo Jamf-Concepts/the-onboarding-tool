@@ -72,7 +72,7 @@ Screenshots live in `Screenshots/`. The full set, with captions, is on the [wiki
 
 **Pick a module and start**
 
-![The Onboarding Tool home screen, with a card for Setup Manager and a card for Setup Checklist.](Screenshots/home-screen.png)
+![The Onboarding Tool home screen, with a card for Setup Manager and a card for Setup Checklist.](Screenshots/Homepage.png)
 
 **See close to what the user will see, before you deploy**
 
