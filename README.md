@@ -1,14 +1,11 @@
-<!-- Add the app icon here once it's in the repo, e.g. Screenshots/AppIcon.png -->
-<!-- <img src="Screenshots/AppIcon.png" width="120" alt="The Onboarding Tool icon"> -->
-
-# The Onboarding Tool from Jamf Concepts
+# The Onboarding Tool
 
 > **A faster, friendlier way to build Jamf Mac onboarding configurations. No XML required.**
 
 ![macOS 15+](https://img.shields.io/badge/macOS-15%2B-success)
 ![Swift](https://img.shields.io/badge/Swift-SwiftUI-orange)
 
-[![The Onboarding Tool home screen](Screenshots/Homepage.png)](Screenshots/Homepage.png)
+[![The Onboarding Tool home screen, with a card for Setup Manager and a card for Setup Checklist.](Screenshots/home-screen.png)](Screenshots/home-screen.png)
 
 ---
 
@@ -40,9 +37,9 @@
 
 The Onboarding Tool (TOT) is a native macOS app that gives you one graphical editor for Jamf's two primary Mac onboarding solutions: **Jamf Setup Manager**, the built-in enrollment workflow engine, and **Jamf Setup Checklist**, the Jamf Concepts first-login checklist and its Welcome screen.
 
-Both read their configuration from a property list. Historically you produced that plist by hand-editing XML, or by typing key names into a Custom Settings payload and hoping you got them right. TOT replaces that with a guided form: every documented key in both profiles is exposed, every row carries plain-language help, and a live preview shows you the generated XML as you type.
+Both read their configuration from a property list. Historically you produced that plist by hand-editing XML, or by typing key names into a Custom Settings payload. TOT replaces that with a guided form: every documented key in both profiles is available, every row carries plain-language help, and a live preview shows you the generated XML as you type.
 
-TOT does not change how Setup Manager or Setup Checklist behave. It produces the same configuration files you would build by hand, faster and with far less guesswork.
+TOT does not change how Setup Manager or Setup Checklist behave. It produces the same configuration files you would build by hand.
 
 ### Key capabilities
 
@@ -66,13 +63,8 @@ TOT does not change how Setup Manager or Setup Checklist behave. It produces the
 
 - It does not manage devices, scope profiles, or send commands to any Mac.
 - It does not modify your Jamf Pro instance, apart from uploading an icon when you ask it to.
-- It does not require a Jamf Pro connection at all. Every editing and export feature works offline.
+- It does not require a Jamf Pro connection at all. Editing and export features work offline.
 
-Screenshots live in `Screenshots/`. The full set, with captions, is on the [wiki](https://github.com/Jamf-Concepts/the-onboarding-tool/wiki).
-
-**Pick a module and start**
-
-![The Onboarding Tool home screen, with a card for Setup Manager and a card for Setup Checklist.](Screenshots/Homepage.png)
 
 **See close to what the user will see, before you deploy**
 
@@ -107,26 +99,23 @@ Browse the app catalog, your Jamf Pro icons, SF Symbols, or a local file, all fr
 2. Double-click it and follow the installer prompts. The package installs The Onboarding Tool to `/Applications`.
 3. Launch **The Onboarding Tool**.
 
-The app is signed with a Developer ID certificate and notarized by Apple, so it opens normally on first launch. No right-click workaround needed.
-
-To deploy it to your admin team, the `.pkg` can be delivered through a Jamf Pro policy like any other package.
+The app is signed by Jamf Software, LLC. and notarized by Apple.
 
 ---
 
 ## First launch
 
-A brief Jamf Concepts splash appears, then you land on the Home screen. Nothing needs configuring before you start. Pick a module and begin.
+The app opens to the Home screen. Nothing needs configuring before you start. Pick a module and begin. 
 
 Two things worth knowing on day one:
 
-- **Every launch starts fresh** with an empty, untitled configuration. Nothing is auto-restored. Use **Open Project** to pick up earlier work, and note that autosave only begins once you have named a project with **Save as Project**.
-- If a release is ever withdrawn, the app shows an **Update Required** screen and asks you to install the latest build. A version check runs during the splash and is skipped if it cannot reach the network, so being offline never prevents the app from opening.
+- **Every launch starts fresh** with an empty, untitled configuration. Nothing is auto-restored. Use **Open Project** to pick up earlier work, and note that autosave only begins once you have named a project with **Save as Project**. 
 
 ---
 
 ## Connecting Jamf Pro
 
-The connection is optional and read-only apart from icon upload. Open **API Settings** (the network shield in the toolbar).
+The connection is optional and read-only apart from icon upload. Open **Settings** and go to the **Jamf Pro** tab. Three ways in: the gear in the toolbar, `Cmd-,`, or **Settings** in the app menu. While no connection is saved, Settings opens on that tab for you.
 
 | Field | Value |
 | --- | --- |
@@ -135,18 +124,18 @@ The connection is optional and read-only apart from icon upload. Open **API Sett
 | Client ID / Client Secret | Shown when API Client is selected |
 | Username / Password | Shown when Basic Auth is selected |
 
-Click **Save**, then **Test Connection** to verify.
+Click **Test Connection** to verify, then **Save**. Nothing is written to the Keychain until you save, so a partly-typed secret is never stored. Once saved, the connected hostname appears under the window title, which is how you tell a sandbox instance from production at a glance.
 
 ### Creating an API role and client
 
 1. In Jamf Pro, go to **Settings → System → API Roles and Clients**.
 2. On the **API Roles** tab, click **New** and grant the privileges in the table below.
 3. On the **API Clients** tab, create a client, assign that role, and generate a client secret.
-4. Copy the Client ID and secret into API Settings.
+4. Copy the Client ID and secret into **Settings → Jamf Pro**.
 
 ### Required permissions
 
-Grant only what the features you actually use require. The same list appears in the app, in API Settings.
+As a best security practice, don't grant permissions to an API client unless you need them. 
 
 | Feature | Required privilege |
 | --- | --- |
@@ -156,9 +145,8 @@ Grant only what the features you actually use require. The same list appears in 
 | Policy Trigger browser | `Read - Policies` |
 | Department options in User Entry | `Read Departments` |
 | Building options in User Entry | `Read Buildings` |
-| App Installer catalog refresh | `Read App Installers` *(verify — see note below)* |
+| App Installer catalog refresh | `Read Mac Applications` |
 
-Copy those strings exactly. Jamf Pro API privileges have no dash (`Read Departments`) while Classic API privileges do (`Read - Policies`), and the privilege picker will not match a near miss.
 
 ### External services
 
@@ -169,8 +157,6 @@ TOT reaches three static endpoints, none of which require authentication or send
 | `raw.githubusercontent.com` (jamf/Setup-Manager) | Promo icon for the Setup Manager tile on the Home screen |
 | `raw.githubusercontent.com` (Jamf-Concepts/setup-checklist) | Promo icon for the Setup Checklist tile |
 | `raw.githubusercontent.com` (Installomator/Installomator) | The live `Labels.txt` list for the Installomator label picker, with an offline cache fallback |
-
-All outbound requests identify themselves as `TheOnboardingTool/<version> (macOS)`.
 
 ---
 
@@ -220,7 +206,7 @@ The wiki is the full admin guide.
 
 ---
 
-## Credential storage and security
+## Data
 
 | Item | Where it is stored |
 | --- | --- |
@@ -228,19 +214,17 @@ The wiki is the full admin guide.
 | Server URL, username, client ID | App preferences |
 | Saved projects | `~/Library/Application Support/TheOnboardingTool/Projects`, configuration only, never credentials |
 
-To remove stored credentials, open API Settings and click **Clear Credentials**. This deletes them from the Keychain.
+To remove stored credentials, open **Settings → Jamf Pro** and click **Clear Credentials**. This deletes the password or client secret from the Keychain and removes the username and client ID from preferences. The server URL is kept on purpose, so you can reconnect to the same instance without retyping it.
 
-TOT runs no local processes. Shell commands and scripts you configure are data: they are written into a plist and executed later by Setup Manager or Setup Checklist on the enrolling Mac, never on yours.
+TOT runs no local processes. Shell commands and scripts you configure are data: they are written into a plist and executed later by Setup Manager or Setup Checklist on the enrolling Mac.
 
 ---
 
-## Privacy and analytics
+## Privacy
 
 We use TelemetryDeck to know how often the app is opened. That helps us decide if we should keep working on the idea. The information is anonymous and you can disable it in Settings.
 
-The notification is sent while the app is opening: that the app started, and on the very first run, that it was newly installed. **No configuration data, credentials, Jamf Pro details, or anything you type into the editors is ever transmitted.**
-
-To turn it off, open **Settings** (the gear in the toolbar) and enable **Opt out of analytics**. Because the notification is sent during launch, opting out applies from the next launch onward.
+To turn it off, open **Settings** (the gear in the toolbar) and enable **Opt out of analytics**. 
 
 See [Jamf's Privacy Policy](https://www.jamf.com/trust-center/privacy/privacy-policy/) for information on data handling.
 
@@ -255,10 +239,10 @@ Check the mode bar at the top of the editor. Green means Jamf School Mode, which
 Same cause. Jamf School Mode limits the picker to Installomator, Shell Command, Watch Path, and Wait.
 
 **Browse Icons shows an error instead of icons.**
-Your Jamf Pro connection is missing or invalid. An orange dot on the API Settings button means none is configured. Confirm the URL and credentials, then use Test Connection. The icon browser needs no privileges beyond a working connection.
+Your Jamf Pro connection is missing or invalid. Check the window title: a connected instance shows its hostname on the line beneath. If it is blank, open **Settings → Jamf Pro**, confirm the URL and credentials, then use Test Connection. The icon browser needs no privileges beyond a working connection.
 
 **A Browse button does nothing.**
-Blue buttons query Jamf Pro and need a connection. Green buttons work offline. If a blue button is inert, check API Settings.
+Blue buttons query Jamf Pro and need a connection. Green buttons work offline. If a blue button is inert, check **Settings → Jamf Pro**.
 
 **The exported profile looks right but MDM is not applying it.**
 The preference domain in your payload probably does not match the module. Use `.mobileconfig` export, which embeds the domain automatically.
@@ -283,9 +267,7 @@ Local file paths must resolve on the target Mac, not on yours. Deliver the asset
 
 ### Logging
 
-Debug logging is off by default. Turn it on in **Settings**, reproduce the problem, then click **Export Log**.
-
-The log records API request URLs, the authentication *type* used, HTTP status codes, response sizes, and timing. It never contains passwords, tokens, or credential values, so it is safe to attach to an issue. It is held in memory only, capped at 500 entries, and cleared when you quit, so export before closing.
+Debug logging is off by default. If you encounter a problem, turn it on in **Settings**, reproduce the problem, then click **Export Log**.
 
 ---
 
@@ -301,31 +283,35 @@ We use TelemetryDeck to know how often the app is opened. That helps us decide i
 
 ---
 
-## Terms of Use
-
-Copyright 2026, Jamf Software LLC.
-
-The Onboarding Tool is available under the terms of the [Jamf Concepts Use Agreement](https://resources.jamf.com/documents/jamf-concept-projects-use-agreement.pdf).
-
-Please see [Jamf's Privacy Policy](https://www.jamf.com/trust-center/privacy/privacy-policy/) for information on data handling.
-
----
-
 ## Help and Feedback
 
-We welcome your feedback submitted via [GitHub Issues](../../issues).
+We welcome your feedback submitted via [GitHub Issues](https://github.com/Jamf-Concepts/the-onboarding-tool/issues).
 
 If you are reporting a bug, turn on debug logging first, reproduce the problem, then export the log and attach it. Include the version from **The Onboarding Tool → About The Onboarding Tool**.
 
 ---
 
-## Related
+## Related Projects
 
 - [Jamf Setup Manager](https://github.com/jamf/Setup-Manager) and its [Configuration Profile reference](https://github.com/jamf/Setup-Manager/blob/main/ConfigurationProfile.md)
 - [Jamf Setup Checklist](https://github.com/Jamf-Concepts/setup-checklist)
 - [Installomator](https://github.com/Installomator/Installomator) label list
-- [Jamf Concepts on GitHub](https://github.com/Jamf-Concepts)
 
 ---
 
-_The Onboarding Tool, a Jamf Concepts project, in beta._
+## Security
+
+Information security is a team effort. If you discover a security vulnerability in our software, please report it through [Jamf's Vulnerability Disclosure Program](https://www.jamf.com/security/vulnerability-disclosure/).
+
+For more information about Jamf's security program, please see:
+[https://security.jamf.com/](https://security.jamf.com/)
+
+---
+
+## Terms of Use
+
+The Onboarding Tool is made available under the [Jamf Concepts Use Agreement](https://concepts.jamf.com/agreement).
+
+---
+
+Copyright 2026, Jamf Software LLC.
