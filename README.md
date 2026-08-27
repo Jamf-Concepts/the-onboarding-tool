@@ -5,7 +5,7 @@
 ![macOS 15+](https://img.shields.io/badge/macOS-15%2B-success)
 ![Swift](https://img.shields.io/badge/Swift-SwiftUI-orange)
 
-[![The Onboarding Tool home screen, with a card for Setup Manager and a card for Setup Checklist.](Screenshots/Homepage.png)](Screenshots/Homepage.png)
+[![The Onboarding Tool home screen, with a card for Setup Manager and a card for Setup Checklist.](Screenshots/home-screen.png)](Screenshots/home-screen.png)
 
 ---
 
@@ -26,7 +26,6 @@
 10. [Credential storage and security](#credential-storage-and-security)
 11. [Privacy and analytics](#privacy-and-analytics)
 12. [Troubleshooting](#troubleshooting)
-    - [Logging](#logging)
 13. [Dependencies and Software Bill of Materials](#dependencies-and-software-bill-of-materials)
 14. [Terms of Use](#terms-of-use)
 15. [Help and Feedback](#help-and-feedback)
@@ -48,10 +47,11 @@ TOT does not change how Setup Manager or Setup Checklist behave. It produces the
 | Two modules, one app | Setup Manager (`com.jamf.setupmanager`) and Setup Checklist (`com.jamf.setupchecklist` plus `com.jamf.setup.welcome`) |
 | Complete key coverage | Every documented key in each profile, not just the common ones, with help text on every field |
 | Live Plist Preview | Syntax-highlighted XML that syncs both ways: edit the form or edit the XML |
-| Workflow Preview | See the enrollment window, Welcome screen, and checklist without deploying to a test Mac. Pick a language, toggle light or dark |
+| Workflow Preview | See the enrollment window, Welcome screen, and checklist without deploying to a test Mac. Pick a language, and toggle whether the *enrolling Mac* is in light or dark appearance |
 | Validation warnings | Flags empty labels, duplicate step identifiers, missing triggers, and other common mistakes before you export |
 | Jamf Pro and Jamf School | A mode toggle tailors the editor and strips settings Jamf School cannot use |
-| Browse Icons | One picker across the App Installers catalog, your uploaded Jamf Pro icons, SF Symbols, a local file, and a Create Icon tab that builds one from any image |
+| Browse Icons | One picker across the App Installers catalog, your uploaded Jamf Pro icons, your Self Service branding, SF Symbols, a local file, and a Create Icon tab that builds one from any image |
+| Light and dark appearance | Follows your Mac by default, or pin either one in Settings under General |
 | Jamf Pro browsers | Insert real policy triggers, departments, and buildings instead of copying IDs by hand |
 | Saved projects | Name a configuration and it autosaves as you work |
 | Localization | Localize any supported field, then translate every language at once using macOS's on-device Translation framework |
@@ -146,6 +146,9 @@ As a best security practice, don't grant permissions to an API client unless you
 | Department options in User Entry | `Read Departments` |
 | Building options in User Entry | `Read Buildings` |
 | App Installer catalog refresh | `Read Mac Applications` |
+| Self Service Branding source | `Read Self Service Branding Configurations` |
+
+The Self Service Branding source works in two steps. Reading the branding configuration needs a privilege, but the image URL it returns serves without authentication, which is what makes it valid in an exported profile: the enrolling Mac holds no credentials. That URL carries your instance hostname, so a profile built from it is tied to that Jamf Pro server.
 
 
 ### External services
@@ -203,6 +206,7 @@ The wiki is the full admin guide.
 | [Features and Navigation](../../wiki/Features-and-Navigation) | Getting around, connecting Jamf Pro, both previews, saved projects, localization, import and export |
 | [Setup Manager Module](../../wiki/Setup-Manager-Module) | Build an enrollment workflow start to finish, every action type, substitution variables, Jamf School differences |
 | [Setup Checklist Module](../../wiki/Setup-Checklist-Module) | Build a checklist and Welcome screen, every step type, deployment |
+| [Troubleshooting](../../wiki/Troubleshooting) | Symptoms, causes, and fixes, plus what to include in a bug report |
 
 ---
 
@@ -232,42 +236,14 @@ See [Jamf's Privacy Policy](https://www.jamf.com/trust-center/privacy/privacy-po
 
 ## Troubleshooting
 
-**A field I expected is missing.**
-Check the mode bar at the top of the editor. Green means Jamf School Mode, which hides Jamf Pro-only fields. Note that switching to Jamf School removes those settings after asking you to confirm, so they need re-entering if you switch back.
+Symptoms, causes, and fixes live on the wiki: **[Troubleshooting](../../wiki/Troubleshooting)**. It covers missing fields, connection and privilege errors, icon and image sources, appearance, export and deployment, the Welcome screen, localization, and autosave.
 
-**An action type is not in the picker.**
-Same cause. Jamf School Mode limits the picker to Installomator, Shell Command, Watch Path, and Wait.
+Two things worth knowing without leaving this page:
 
-**Browse Icons shows an error instead of icons.**
-Your Jamf Pro connection is missing or invalid. Check the window title: a connected instance shows its hostname on the line beneath. If it is blank, open **Settings → Jamf Pro**, confirm the URL and credentials, then use Test Connection. The icon browser needs no privileges beyond a working connection.
+- Blue **Browse** buttons query Jamf Pro and need a connection. Green ones work offline.
+- **Test Connection** needs no privileges, so it passes on a role with nothing granted. If a browser fails after a successful test, the privilege is missing, not the connection.
 
-**A Browse button does nothing.**
-Blue buttons query Jamf Pro and need a connection. Green buttons work offline. If a blue button is inert, check **Settings → Jamf Pro**.
-
-**The exported profile looks right but MDM is not applying it.**
-The preference domain in your payload probably does not match the module. Use `.mobileconfig` export, which embeds the domain automatically.
-
-**The Welcome screen never appears.**
-Three causes, in order of likelihood: you deployed only the checklist profile and not `com.jamf.setup.welcome`; **Show Welcome Screen** is off; or the account is in **Excluded Accounts**.
-
-**Checklist steps never complete.**
-**Debug Mode** is on in Global Settings. Steps intentionally do not complete in Debug Mode.
-
-**A translation failed with an orange warning.**
-The language pack is not downloaded. Go to **System Settings → General → Language & Region → Translation Languages**.
-
-**Translations do not appear on the device.**
-The locale code must match what macOS reports for that user exactly. Use `en-US`, not `en`.
-
-**My project did not reopen with my last changes.**
-Autosave starts only after you name a project with **Save as Project**. An unnamed session is not retained.
-
-**Branding does not appear on the enrolling Mac.**
-Local file paths must resolve on the target Mac, not on yours. Deliver the asset with a package or policy first, or reference a Jamf Pro-hosted icon.
-
-### Logging
-
-Debug logging is off by default. If you encounter a problem, turn it on in **Settings**, reproduce the problem, then click **Export Log**.
+**Logging.** Debug logging is off by default. Turn it on in **Settings → General**, reproduce the problem, then click **Export Log**. The log records API URLs, auth type, status codes, and timing, never credentials or tokens.
 
 ---
 
@@ -279,7 +255,7 @@ The Onboarding Tool uses one third-party dependency, pulled in via Swift Package
 | --- | --- | --- | --- | --- |
 | TelemetryDeck SwiftSDK | 2.14.2 | MIT | [github](https://github.com/TelemetryDeck/SwiftSDK) | [LICENSE](https://github.com/TelemetryDeck/SwiftSDK/blob/main/LICENSE) |
 
-We use TelemetryDeck to know how often the app is opened. That helps us decide if we should keep working on the idea. The information is anonymous and you can disable it in Settings.
+See [Privacy](#privacy) for what that dependency reports and how to turn it off.
 
 ---
 
