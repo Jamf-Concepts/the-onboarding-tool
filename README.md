@@ -5,7 +5,7 @@
 ![macOS 15+](https://img.shields.io/badge/macOS-15%2B-success)
 ![Swift](https://img.shields.io/badge/Swift-SwiftUI-orange)
 
-[![The Onboarding Tool home screen, with a card for Setup Manager and a card for Setup Checklist.](Screenshots/Homescreen.png)](Screenshots/Homescreen.png)
+[![The Onboarding Tool home screen, with a card for Setup Manager and a card for Setup Checklist.](Screenshots/Homepage.png)](Screenshots/Homepage.png)
 
 ---
 
