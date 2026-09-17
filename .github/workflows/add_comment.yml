@@ -4,6 +4,9 @@ on:
   release:
     types: [published]
 
+permissions:
+  contents: write
+
 jobs:
   update-release:
     runs-on: ubuntu-latest
@@ -37,7 +40,9 @@ jobs:
 
         # Append the additional text to the release body
         echo "Appending additional text to the release body."
-        UPDATED_RELEASE_BODY="$RELEASE_BODY\n\n$ADDITIONAL_TEXT"
+        UPDATED_RELEASE_BODY="$RELEASE_BODY
+
+$ADDITIONAL_TEXT"
 
         # Update the release with the new body
         echo "Updating the release with the new body."
