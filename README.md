@@ -1,6 +1,6 @@
 # The Onboarding Tool
 
-> **A faster, friendlier way to build Jamf Mac onboarding configurations. No XML required.**
+> **A faster, friendlier way to build Jamf Mac onboarding configurations. No XML required.** 
 
 ![macOS 15+](https://img.shields.io/badge/macOS-15%2B-success)
 ![Swift](https://img.shields.io/badge/Swift-SwiftUI-orange)
